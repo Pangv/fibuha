@@ -5,6 +5,9 @@ package de.lebk.fibuha.account.profit_loss_accounts;
  */
 public class RevenueAccount extends ProfitLossAccount{
 
+    public RevenueAccount(int accountNumber, String accountDescription) {
+        super(accountNumber, accountDescription);
+    }
 
     @Override
     public double getAccountSum() {

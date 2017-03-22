@@ -1,16 +1,20 @@
 package de.lebk.fibuha.gui;
 
+import de.lebk.fibuha.account.Account;
+import de.lebk.fibuha.dao.DataAccessObject;
+import de.lebk.fibuha.posting.PostingRecord;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.text.NumberFormatter;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.text.NumberFormat;
+import java.util.Iterator;
 
 /**
  * @author sopaetzel
@@ -23,8 +27,9 @@ public class Form {
     private JPanel pnlClosure;
     private JPanel pnlEvaluation;
     private JTextField txtfAccountNumber;
-    private JButton btnAccountCreate;
+    private JTextField txtfPostingValue;
     private JTextField txtfAccountDescription;
+    private JButton btnAccountCreate;
     private JButton btnAccountSearch;
     private JButton btnAccountShow;
     private JButton btnAccountDelete;
@@ -32,18 +37,23 @@ public class Form {
     private JLabel lblAccountNumber;
     private JLabel lblAccountDescription;
     private JScrollPane scrlAccountsView;
-    private JComboBox comboBox1;
-    private JComboBox comboBox2;
-    private JButton buchungDurchführenButton;
-    private JTextArea textArea1;
-    private JTextArea textArea2;
-    private JTextArea textArea3;
-    private JFormattedTextField ftxtfPostingValue;
+    private JComboBox<Account> cbxDebit;
+    private JComboBox<Account> cbxCredit;
+    private JButton btnExecutePosting;
+    private JTextArea txtaMessage;
+    private JTextArea txtaLandRegister;
+    private JTextArea txtaLedger;
     private JLabel lblFibuha;
+    private JLabel lblLogo;
+    private JLabel lblPostingValue;
+    private JLabel lblMessage;
+    private JLabel lblLandRegister;
+    private JLabel lblLedger;
 
 
     public Form() {
         createUIComponents();
+        fillComboBoxes();
         initActionListener();
     }
 
@@ -51,13 +61,14 @@ public class Form {
         setLookAndFeel();
 
 
-        Dimension dimension = new Dimension(658, 239);
+        Dimension dimension = new Dimension(750, 380);
         JFrame frame = new JFrame("svennoTec - Finanzbuchhaltung");
         JPanel container = new Form().pnlForm;
 
         frame.setContentPane(container);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setMinimumSize(dimension);
+        frame.setName("Finanzbuchhaltung");
         try {
             frame.setIconImage(ImageIO.read(Form.class.getResourceAsStream("/so-icon.png")));
         } catch (IOException e) {
@@ -67,19 +78,6 @@ public class Form {
         frame.setVisible(true);
     }
 
-    private static void setLookAndFeel() {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     private void initActionListener() {
@@ -109,7 +107,17 @@ public class Form {
         btnAccountCreate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Konto anlegen...");
+
+                Iterator<Account> accountIterator = DataAccessObject.getInstance().getAccountList().iterator();
+                Account account;
+                while (accountIterator.hasNext()) {
+                    account = accountIterator.next();
+                    if (account.getAccountNumber() == Integer.parseInt(txtfAccountNumber.getText())) {
+                        JOptionPane.showMessageDialog(null, "Konto ist bereits vorhanden");
+                        return;
+                    }
+                }
+                DataAccessObject.getInstance().addAccount((Integer.parseInt(txtfAccountNumber.getText())), txtfAccountDescription.getText());
             }
         });
 
@@ -126,27 +134,74 @@ public class Form {
         btnAccountShow.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Kontoanzeige...");
+                Iterator<Account> accountIterator = DataAccessObject.getInstance().getAccountList().iterator();
+                Account account;
+                while (accountIterator.hasNext()) {
+                    account = accountIterator.next();
+                    System.out.println(account.getAccountNumber() + " " + account.getAccountDescription());
+                }
             }
         });
-        // Postings
 
+        //Postings
+        btnExecutePosting.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new PostingRecord((Account) cbxDebit.getSelectedItem(), (Account) cbxCredit.getSelectedItem(), txtfPostingValue.getText());
+            }
+        });
+
+        //Tab Listener
+        tpnFibuha.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
+                int index = tabbedPane.getSelectedIndex();
+                System.out.println("Changed to: " + tabbedPane.getComponentAt(index).getName());
+                fillComboBoxes();
+                //TODO update target-component
+            }
+        });
+
+
+    }
+
+    private void fillComboBoxes(){
+        DefaultComboBoxModel<Account> accountDefaultComboBoxModelLeft = new DefaultComboBoxModel<>();
+        DefaultComboBoxModel<Account> accountDefaultComboBoxModelRight = new DefaultComboBoxModel<>();
+        Iterator<Account> accountIterator = DataAccessObject.getInstance().getAccountList().iterator();
+        Account account;
+        while (accountIterator.hasNext()){
+            account = accountIterator.next();
+            accountDefaultComboBoxModelLeft.addElement(account);
+            accountDefaultComboBoxModelRight.addElement(account);
+        }
+        cbxDebit.setModel(accountDefaultComboBoxModelLeft);
+        cbxCredit.setModel(accountDefaultComboBoxModelRight);
 
     }
 
     private void createUIComponents() {
 
-        NumberFormat format = NumberFormat.getCurrencyInstance();
-        format.setMaximumFractionDigits(2);
-        format.setMaximumIntegerDigits(8);
-
-        NumberFormatter formatter = new NumberFormatter(format);
-        formatter.setMinimum(0.0);
-        formatter.setAllowsInvalid(false);
-        formatter.setOverwriteMode(true);
-
-        ftxtfPostingValue = new JFormattedTextField(formatter);
-        ftxtfPostingValue.setValue(0.0);
 
     }
+
+    private static void setLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException e) {
+            System.err.println("LaF wurde nicht gefunden");
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            System.err.println("");
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            System.err.println(" ");
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            System.err.println("LaF wird auf diesem System nicht unterstützt.");
+            e.printStackTrace();
+        }
+    }
+
 }

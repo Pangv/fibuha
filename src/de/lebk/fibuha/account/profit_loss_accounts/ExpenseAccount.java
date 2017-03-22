@@ -6,6 +6,10 @@ package de.lebk.fibuha.account.profit_loss_accounts;
 public class ExpenseAccount extends ProfitLossAccount{
 
 
+    public ExpenseAccount(int accountNumber, String accountDescription) {
+        super(accountNumber, accountDescription);
+    }
+
     @Override
     public String toString() {
         return super.toString();

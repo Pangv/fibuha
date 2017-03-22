@@ -5,6 +5,10 @@ package de.lebk.fibuha.account.asset_accounts;
  */
 public class LiabilityAccount extends StockAccount{
 
+    public LiabilityAccount(int accountNumber, String accountDescription, double openingBalance) {
+        super(accountNumber, accountDescription, openingBalance);
+    }
+
     @Override
     public double getAccountSum() {
         return 0;
