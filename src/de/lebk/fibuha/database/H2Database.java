@@ -12,10 +12,6 @@ public class H2Database {
         DatabaseConnection.getInstance().openConnection();
         Statement statement = DatabaseConnection.getInstance().getConnection().createStatement();
 
-
-
-
-
         statement.execute("create table if not exists kontoart (kontoartid int primary key, bezeichnung varchar(32) unique)");
         //
         statement.execute("create table if not exists konto (kontonummer varchar(4) primary key, bezeichnung varchar(32) unique, anfangsbestand double, kontoart int)");
@@ -35,17 +31,8 @@ public class H2Database {
 
         DatabaseConnection.getInstance().changeData("merge into konto values('0134','BGA','3000.50','1')");
 
-/*
-        DbZugriff.getZugriffsObjekt().aendereDaten("MERGE INTO " + table + " VALUES('Delta','C2C')");
-        DbZugriff.getZugriffsObjekt().aendereDaten("MERGE INTO " + table + " VALUES('Sonnentanz','Klangkarussel')");
-        DbZugriff.getZugriffsObjekt().aendereDaten("MERGE INTO " + table + " VALUES('Fiction','The XX')");
-        DbZugriff.getZugriffsObjekt().aendereDaten("MERGE INTO " + table + " VALUES('Sun and Moon','Above & Beyond')");
-
         System.out.println("Lines inserted");
         System.out.println("==============\n");
-
-
-        DbZugriff.getZugriffsObjekt().getMetaInformation();*/
 
 
         DatabaseConnection.getInstance().closeConnection();

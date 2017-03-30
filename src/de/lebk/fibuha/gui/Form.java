@@ -157,6 +157,9 @@ public class Form {
         btnExecutePosting.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                txtaMessage.setText("");
+                txtaLandRegister.setText("");
+                txtaLedger.setText("");
 
                 Account debit = (Account) cbxDebit.getSelectedItem();
                 Account credit = (Account) cbxCredit.getSelectedItem();
