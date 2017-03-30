@@ -79,17 +79,17 @@ public class Form {
     }
 
 
-
     private void initActionListener() {
         //General
         lblFibuha.addMouseListener(new MouseAdapter() {
             boolean flag = false;
+
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!flag){
+                if (!flag) {
                     lblFibuha.setText("Finanz Buch Haltung");
                     flag = !flag;
-                }else {
+                } else {
                     lblFibuha.setText("Fi Bu Ha");
                     flag = !flag;
                 }
@@ -101,23 +101,29 @@ public class Form {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Suche...");
+                Account account = DataAccessObject.getInstance().searchAccount(Integer.parseInt(txtfAccountNumber.getText()));
+
+                if (account != null){
+                    txtaAccountsView.setText("");
+                    txtaAccountsView.append(account.toScreen());
+
+                }else {
+                    txtaAccountsView.setText("Konto "+ txtfAccountNumber.getText() +" wurde nicht gefunden");
+
+                }
             }
         });
 
         btnAccountCreate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                Iterator<Account> accountIterator = DataAccessObject.getInstance().getAccountList().iterator();
-                Account account;
-                while (accountIterator.hasNext()) {
-                    account = accountIterator.next();
-                    if (account.getAccountNumber() == Integer.parseInt(txtfAccountNumber.getText())) {
-                        JOptionPane.showMessageDialog(null, "Konto ist bereits vorhanden");
-                        return;
-                    }
+                if (DataAccessObject.getInstance().searchAccount(Integer.parseInt(txtfAccountNumber.getText())) == null) {
+                    DataAccessObject.getInstance().addAccount((Integer.parseInt(txtfAccountNumber.getText())), txtfAccountDescription.getText());
+                } else {
+                    JOptionPane.showMessageDialog(null, "Konto ist bereits vorhanden");
                 }
-                DataAccessObject.getInstance().addAccount((Integer.parseInt(txtfAccountNumber.getText())), txtfAccountDescription.getText());
+
+
             }
         });
 
@@ -125,6 +131,8 @@ public class Form {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (JOptionPane.showConfirmDialog(null, "Wollen Sie das Konto wirklich löschen?", "Achtung, Danger Zone", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
+                    DataAccessObject.getInstance().removeAccount(Integer.parseInt(txtfAccountNumber.getText()));
+
                     System.out.println("Konto gelöscht");
                 } else {
                     System.out.println("Löschen abgebrochen");
@@ -134,11 +142,13 @@ public class Form {
         btnAccountShow.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                txtaAccountsView.setText("");
                 Iterator<Account> accountIterator = DataAccessObject.getInstance().getAccountList().iterator();
                 Account account;
                 while (accountIterator.hasNext()) {
                     account = accountIterator.next();
                     System.out.println(account.getAccountNumber() + " " + account.getAccountDescription());
+                    txtaAccountsView.append(account.toScreen());
                 }
             }
         });
@@ -147,7 +157,25 @@ public class Form {
         btnExecutePosting.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new PostingRecord((Account) cbxDebit.getSelectedItem(), (Account) cbxCredit.getSelectedItem(), txtfPostingValue.getText());
+
+                Account debit = (Account) cbxDebit.getSelectedItem();
+                Account credit = (Account) cbxCredit.getSelectedItem();
+                String postingValue = txtfPostingValue.getText();
+
+                PostingRecord postingRecord = new PostingRecord(debit, credit, postingValue);
+
+                txtaLandRegister.append("Stand der Konten vor der Buchung:\n\n");
+                txtaLandRegister.append(debit.toScreen());
+                txtaLandRegister.append(credit.toScreen());
+                txtaLandRegister.append("\n");
+
+                txtaMessage.setText(postingRecord.executePosting());
+
+                txtaLedger.setText(postingRecord.toString());
+
+                txtaLandRegister.append("Stand der Konten nach der Buchung:\n\n");
+                txtaLandRegister.append(debit.toScreen());
+                txtaLandRegister.append(credit.toScreen());
             }
         });
 
@@ -166,12 +194,12 @@ public class Form {
 
     }
 
-    private void fillComboBoxes(){
+    private void fillComboBoxes() {
         DefaultComboBoxModel<Account> accountDefaultComboBoxModelLeft = new DefaultComboBoxModel<>();
         DefaultComboBoxModel<Account> accountDefaultComboBoxModelRight = new DefaultComboBoxModel<>();
         Iterator<Account> accountIterator = DataAccessObject.getInstance().getAccountList().iterator();
         Account account;
-        while (accountIterator.hasNext()){
+        while (accountIterator.hasNext()) {
             account = accountIterator.next();
             accountDefaultComboBoxModelLeft.addElement(account);
             accountDefaultComboBoxModelRight.addElement(account);

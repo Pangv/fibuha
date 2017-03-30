@@ -20,7 +20,7 @@ public class DatabaseConnection {
     }
 
     public void openConnection() throws SQLException, ClassNotFoundException {
-        String connectionString = "jdbc:h2:~/data/meinemusik";
+        String connectionString = "jdbc:h2:~/data/fibuha";
         Class.forName("org.h2.Driver");
         this.connection = DriverManager.getConnection(connectionString, "", "");
         this.statement = connection.createStatement();
@@ -34,12 +34,12 @@ public class DatabaseConnection {
         return statement.executeQuery(sql);
     }
 
-    public int updateData(String sql) throws SQLException {
+    public int changeData(String sql) throws SQLException {
         return statement.executeUpdate(sql);
     }
 
-    public int insertDate(String sql) throws SQLException {
-        return statement.executeUpdate(sql);
+    public boolean mergeData(String sql) throws SQLException {
+        return statement.execute(sql);
     }
 
     void getMetaInformation() throws SQLException {

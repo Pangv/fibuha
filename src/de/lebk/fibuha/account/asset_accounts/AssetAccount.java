@@ -37,19 +37,19 @@ public class AssetAccount extends StockAccount{
         sumDebitPosting += value;
     }
 
-//    @Override
-//    public String toString() {
-//        String toReturn = "";
-//        toReturn += String.format("%-33s %04d %-21s %15s\n", "Soll", accountNumber, accountDescription, "Haben");
-//        toReturn += "──────────────────────────────────────┬──────────────────────────────────────\n";
-//        toReturn += String.format("%-21s %,15.2f │%-21s %,15.2f\n", "Anfangsbestand", openingBalance, "Summe Habenbuchungen", sumCreditPosting);
-//        toReturn += String.format("%-21s %,15.2f │%-21s %,15.2f\n", "Summe Sollbuchungen", sumDebitPosting, "Saldo", getBalance());
-//        toReturn += "──────────────────────────────────────┼──────────────────────────────────────\n";
-//        toReturn += String.format("%,37.2f │%,37.2f\n", getAccountSum(), getAccountSum());
-//        toReturn += "══════════════════════════════════════╧══════════════════════════════════════\n";
-//        toReturn += "\n\n";
-//        return toReturn;
-//    }
+    @Override
+    public String toScreen() {
+        String toReturn = "";
+        toReturn += String.format("%-33s %04d %-21s %15s\n", "Soll", accountNumber, accountDescription, "Haben");
+        toReturn += "──────────────────────────────────────┬──────────────────────────────────────\n";
+        toReturn += String.format("%-21s %,15.2f │%-21s %,15.2f\n", "Anfangsbestand", openingBalance, "Summe Habenbuchungen", sumCreditPosting);
+        toReturn += String.format("%-21s %,15.2f │%-21s %,15.2f\n", "Summe Sollbuchungen", sumDebitPosting, "Saldo", getBalance());
+        toReturn += "──────────────────────────────────────┼──────────────────────────────────────\n";
+        toReturn += String.format("%,37.2f │%,37.2f\n", getAccountSum(), getAccountSum());
+        toReturn += "══════════════════════════════════════╧══════════════════════════════════════\n";
+        toReturn += "\n\n";
+        return toReturn;
+    }
 
 
 }

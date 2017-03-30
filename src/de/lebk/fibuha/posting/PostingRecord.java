@@ -43,7 +43,7 @@ public class PostingRecord {
 
     public double evaluatePosting(String postingValueString){
         if (postingValueString.contains(",")){
-            postingValueString.replace(',', '.');
+            postingValueString = postingValueString.replace(',', '.');
         }
         postingValue = Double.parseDouble(postingValueString);
         return postingValue;

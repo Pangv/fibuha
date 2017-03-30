@@ -11,8 +11,8 @@ public class ExpenseAccount extends ProfitLossAccount{
     }
 
     @Override
-    public String toString() {
-        return super.toString();
+    public String toScreen() {
+        return super.toScreen();
     }
 
     @Override

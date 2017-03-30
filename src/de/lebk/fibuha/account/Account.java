@@ -20,6 +20,10 @@ public abstract class Account {
         return String.valueOf(accountNumber);
     }
 
+    public String toScreen() {
+        return String.valueOf(accountNumber);
+    }
+
     public int compareTo(Account account){
         return 0;
     }

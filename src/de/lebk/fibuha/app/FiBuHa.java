@@ -3,12 +3,17 @@ package de.lebk.fibuha.app;
 import de.lebk.fibuha.account.Account;
 import de.lebk.fibuha.account.asset_accounts.AssetAccount;
 import de.lebk.fibuha.dao.DataAccessObject;
+import de.lebk.fibuha.database.H2Database;
 import de.lebk.fibuha.gui.Form;
+
+import java.sql.SQLException;
 
 /**
  * @author sopaetzel
  */
 public class FiBuHa {
+
+
 
     static Account a = new AssetAccount(123, "A", 0.0);
     static Account b = new AssetAccount(023, "B", 0.0);
@@ -22,6 +27,14 @@ public class FiBuHa {
 
 
     public static void main(String[] args){
+
+        try {
+            new H2Database();
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        } catch (ClassNotFoundException e1) {
+            e1.printStackTrace();
+        }
 
         DataAccessObject.getInstance().getAccountList().add(a);
         DataAccessObject.getInstance().getAccountList().add(b);
